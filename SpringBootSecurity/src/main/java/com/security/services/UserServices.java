@@ -2,6 +2,7 @@ package com.security.services;
 
 import com.security.model.ApplicationUser;
 import com.security.model.Role;
+import com.security.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -18,15 +19,13 @@ public class UserServices implements UserDetailsService {
     @Autowired
     private PasswordEncoder encoder;
 
+    @Autowired
+    private UserRepository repository;
+
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         System.out.println("In the user details services");
 
-        if(!username.equals("Ethan")) throw new UsernameNotFoundException("Not ethan");
-
-        Set<Role> roles = new HashSet<>();
-        roles.add(new Role(1, "USER"));
-
-        return new ApplicationUser(1, "Ethan", encoder.encode("password"), roles);
+        return repository.findByUsername(username).orElseThrow(()->new UsernameNotFoundException("user is not valid"));
     }
 }
